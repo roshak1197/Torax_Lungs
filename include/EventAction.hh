@@ -45,12 +45,12 @@ namespace PEPI2
 {
 
 class RunAction;
-class PepiDetectorConstruction;
+class PepiDetectorConstruction2;
 
 class EventAction : public G4UserEventAction
 {
   public:
-    EventAction(RunAction* runAction,PepiDetectorConstruction* detector);
+    EventAction(RunAction* runAction,PepiDetectorConstruction2* detector);
     ~EventAction() override = default;
 
     void BeginOfEventAction(const G4Event* event) override;
@@ -86,7 +86,7 @@ class EventAction : public G4UserEventAction
 
     std::vector<G4double>* fKinEnergyVector;
 
-    PepiDetectorConstruction* fDetector;
+    PepiDetectorConstruction2* fDetector;
 
 };
 

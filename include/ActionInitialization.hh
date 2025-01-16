@@ -43,19 +43,19 @@
 namespace PEPI2
 {
 
-class PepiDetectorConstruction;
+class PepiDetectorConstruction2;
 
 class ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    ActionInitialization(PepiDetectorConstruction* detector);
+    ActionInitialization(PepiDetectorConstruction2* detector);
     ~ActionInitialization() override = default;
 
     void BuildForMaster() const override;
     void Build() const override;
 
   private:
-    PepiDetectorConstruction* fDetector;
+    PepiDetectorConstruction2* fDetector;
 };
 
 }

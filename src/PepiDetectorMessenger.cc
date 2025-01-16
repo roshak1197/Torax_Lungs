@@ -34,7 +34,7 @@
 /// \brief Implementation of the PepiDetectorMessenger class
 
 #include "PepiDetectorMessenger.hh"
-#include "PepiDetectorConstruction.hh"
+#include "PepiDetectorConstruction2.hh"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
@@ -47,7 +47,7 @@
 namespace PEPI2
 {
 
-PepiDetectorMessenger::PepiDetectorMessenger(PepiDetectorConstruction* Det)
+PepiDetectorMessenger::PepiDetectorMessenger(PepiDetectorConstruction2* Det)
 : G4UImessenger(),
   fDetectorConstruction(Det),
   fPepiDirectory(0),

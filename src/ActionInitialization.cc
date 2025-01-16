@@ -35,14 +35,14 @@
 
 #include "ActionInitialization.hh"
 #include "PrimaryGeneratorAction.hh"
-#include "PepiDetectorConstruction.hh"
+#include "PepiDetectorConstruction2.hh"
 #include "RunAction.hh"
 #include "EventAction.hh"
 
 namespace PEPI2
 {
 
-ActionInitialization::ActionInitialization(PepiDetectorConstruction* detector)
+ActionInitialization::ActionInitialization(PepiDetectorConstruction2* detector)
 : G4VUserActionInitialization()
 {
   fDetector = detector;

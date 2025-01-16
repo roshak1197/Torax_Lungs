@@ -33,8 +33,8 @@
 /// \file RunAction.cc
 /// \brief Implementation of the RunAction class
 //
-
-#include "PepiDetectorConstruction.hh"
+#include "PepiDetectorConstruction2.hh"
+//#include "PepiDetectorConstruction.hh"
 #include "ActionInitialization.hh"
 #include "PepiPhysicsList.hh"
 #include "PepiController.hh"
@@ -48,6 +48,8 @@
 
 #include "Randomize.hh"
 
+// Scoring
+#include "G4ScoringManager.hh"
 using namespace PEPI2;
 
 int main(int argc,char** argv)
@@ -63,6 +65,10 @@ int main(int argc,char** argv)
   //use G4SteppingVerboseWithUnits
   G4int precision = 4;
   G4SteppingVerbose::UseBestUnit(precision);
+  
+  // Initialize the primitive scorer
+//  G4ScoringManager * scoringManager = G4ScoringManager::GetScoringManager();
+ // scoringManager->SetVerboseLevel(1);
 
   // Construct the default run manager
   //
@@ -72,7 +78,7 @@ int main(int argc,char** argv)
   // Set mandatory initialization classes
   //
   // Detector construction
-  auto* detector = new PepiDetectorConstruction();
+  auto* detector = new PepiDetectorConstruction2();
   runManager->SetUserInitialization(detector);
 
   // Physics list

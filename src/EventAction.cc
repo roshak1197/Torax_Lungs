@@ -36,7 +36,7 @@
 #include "EventAction.hh"
 #include "RunAction.hh"
 #include "PepiRun.hh"
-#include "PepiDetectorConstruction.hh"
+#include "PepiDetectorConstruction2.hh"
 
 #include "G4SDManager.hh"
 #include "G4HCofThisEvent.hh"
@@ -46,7 +46,7 @@
 namespace PEPI2
 {
 
-EventAction::EventAction(RunAction* runAction,PepiDetectorConstruction* detector)
+EventAction::EventAction(RunAction* runAction,PepiDetectorConstruction2* detector)
 : fRunAction(runAction)
 {
   fDoseLimit = -1;

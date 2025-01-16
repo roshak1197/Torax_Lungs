@@ -46,6 +46,7 @@ set(PEPI2_SCRIPTS
   mac/run2.mac
   mac/vis.mac
   mac/tsg_offscreen.mac
+#  mac/scorers.mac
   detmask_config.in
   gps.in
   geometry_config.in
@@ -56,14 +57,57 @@ set(PEPI2_SCRIPTS
   data/Polycharbonate_delta.txt
   data/Silicon_delta.txt
   data/Water_delta.txt
-  spectra/40kV42deg1Air0.5Be0.5Al.in
-  spectra/50kV42deg1Air0.5Be0.5Al.in
-  spectra/60kV42deg1Air0.5Be0.5Al.in
-  spectra/70kV42deg1Air0.5Be0.5Al.in
-  spectra/80kV42deg1Air0.5Be0.5Al.in
-  spectra/90kV42deg1Air0.5Be0.5Al.in
-  spectra/100kV42deg1Air0.5Be0.5Al.in
-  )
+  data/Aorta_delta.txt
+  data/Breast_delta.txt
+  data/Air_delta.txt
+  data/Alumina_delta.txt
+  data/Glandular_delta.txt
+  data/HA_delta.txt
+  data/Muscle_delta.txt
+  data/P.Iodine_delta.txt
+  data/Silicon_delta.txt
+  data/Trioxide_Delta.txt
+  data/SiC_delta.txt
+  data/Cellulose_delta.txt
+  data/Wax_delta.txt
+  data/random_sphere_coordinates.txt
+  data/125_um_Coord.txt
+  data/125_um_Coord2.txt
+  data/125_um_Coord3.txt
+  data/125_um_Coord4.txt
+  data/125_um_Coord5.txt
+  data/125_um_Coord6.txt
+  data/100_um_Coord1.txt
+  data/100_um_Coord2.txt
+  data/100_um_Coord3.txt
+  data/100_um_Coord4.txt
+  data/100_um_Coord5.txt
+  data/100_um_Coord6.txt
+  data/58_um_Coord1.txt
+  data/58_um_Coord2.txt
+  data/58_um_Coord3.txt
+  data/58_um_Coord4.txt
+  data/58_um_Coord5.txt
+  data/58_um_Coord6.txt
+  spectra/28kVFilterAg.in
+  spectra/28kVFilterMo-Ag.in
+  spectra/28kVFilterRh.in
+  spectra/28kVFilterRh-Ag.in
+  spectra/28kVFilterRh-Mo.in
+  spectra/58kVFilterAg.in
+  spectra/58kVFilterMo-Ag.in
+  spectra/58kVFilterRh.in
+  spectra/58kVFilterRh-Ag.in
+  spectra/58kVFilterRh-Mo.in
+  spectra/78kVFilterAg.in
+  spectra/78kVFilterMo-Ag.in
+  spectra/78kVFilterRh.in
+  spectra/78kVFilterRh-Ag.in
+  spectra/78kVFilterRh-Mo.in
+  spectra/28kVNoFilter.in
+  spectra/78kVNoFilter.in
+  spectra/58kVNoFilter.in
+   )
 
 foreach(_script ${PEPI2_SCRIPTS})
   configure_file(

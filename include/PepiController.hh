@@ -53,7 +53,7 @@ namespace PEPI2
 {
 
 class PepiControllerMessenger;
-class PepiDetectorConstruction;
+class PepiDetectorConstruction2;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -61,7 +61,7 @@ class PepiController
 {
   public:
 
-    PepiController(PepiDetectorConstruction*);
+    PepiController(PepiDetectorConstruction2*);
     ~PepiController();
 
     // - Start a Simulation
@@ -119,7 +119,7 @@ class PepiController
     G4String fTxtName;
     G4String fRawName;
 
-    PepiDetectorConstruction* fDetector;
+    PepiDetectorConstruction2* fDetector;
     PepiControllerMessenger*  fMessenger;
     G4Timer*                   fTimer;
 };

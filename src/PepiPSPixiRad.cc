@@ -270,7 +270,7 @@ void PepiPSPixiRad::EndOfEvent(G4HCofThisEvent*)
   {
     G4double newval = 0;
     // energy blurring calibration from Di Trapani et al. 2020
-    G4double radThreshold = CLHEP::RandGauss::shoot(fThreshold, (2.635+0.02918*(*(itr->second)/keV))/2.35*keV); 
+    G4double radThreshold = CLHEP::RandGauss::shoot(fThreshold, (6.52+0.0746*(*(itr->second)/keV))/2.35*keV); 
     G4int i=0;
     // if the pixel index belong to the cluster it assigns all the signal to the first pixel to be hit (fIndex)
     if ((itr->first) == fIndex || (itr->first) == idx2 || (itr->first) == idx3 || (itr->first) == idx4)

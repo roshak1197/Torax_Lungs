@@ -38,7 +38,7 @@
 #include "RunAction.hh"
 #include "EventAction.hh"
 #include "PrimaryGeneratorAction.hh"
-#include "PepiDetectorConstruction.hh"
+#include "PepiDetectorConstruction2.hh"
 
 #include "G4RunManager.hh"
 #include "G4Timer.hh"
@@ -54,7 +54,7 @@
 namespace PEPI2
 {
 
-PepiController::PepiController(PepiDetectorConstruction* Det)
+PepiController::PepiController(PepiDetectorConstruction2* Det)
 {
     fDetector = Det;
 

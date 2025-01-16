@@ -49,19 +49,19 @@ class G4UIcmdWithABool;
 namespace PEPI2
 {
 
-class PepiDetectorConstruction;
+class PepiDetectorConstruction2;
 
 class PepiDetectorMessenger: public G4UImessenger
 {
   public:
-    PepiDetectorMessenger(PepiDetectorConstruction*);
+    PepiDetectorMessenger(PepiDetectorConstruction2*);
     virtual ~PepiDetectorMessenger();
     
     virtual void SetNewValue(G4UIcommand*, G4String);
     virtual G4String GetCurrentValue(G4UIcommand * command);
     
   private:
-    PepiDetectorConstruction*     fDetectorConstruction;
+    PepiDetectorConstruction2*     fDetectorConstruction;
 
     G4UIdirectory*              fPepiDirectory;
     G4UIdirectory*              fDetDirectory;
