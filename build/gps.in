@@ -3,7 +3,7 @@
 #- cone aperture of 0.006 rad
 #- position of -85 cm along z axis (the default for detector position is + 15 cm)
 /gps/ene/type Mono
-/gps/ene/mono 9.25 keV
+/gps/ene/mono 14.25 keV
 #/gps/hist/type energy
 /gps/particle gamma
 /gps/pos/type Beam
