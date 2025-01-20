@@ -13,7 +13,7 @@
 # ================== Running settings ==================
 
 # Change the default number of threads (in multi-threaded mode)
-/run/numberOfThreads 2
+/run/numberOfThreads 1
 /run/printProgress 1000000
 
 # ================== Geometry settings ==================
@@ -23,7 +23,7 @@
 
 # ================== Readout settings ==================
 
-/Pepi/cont/setBaseName R10_00_14.25kev_
+/Pepi/cont/setBaseName FF10_00_19.25_2_kev_
 
 ################## Kernel initialization ################
 
@@ -38,7 +38,7 @@
 /control/execute gps.in
 #/control/execute spectra/28kVFilterRh.in
 
-/Pepi/cont/beamOn 1180000000
+/Pepi/cont/beamOn 1495000000
 
 #/score/dumpQuantityToFile Mesh1 dose Sph40kVAg1.out
 #/score/dumpQuantityToFile Mesh2 dose Sph40kVAg2.out
