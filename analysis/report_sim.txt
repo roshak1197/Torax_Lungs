@@ -1,0 +1,8 @@
+1. Simulaciones de torax con 1024x1024 pixeles y CdTe sensor. 
+    1.1 Material de lija: SiC
+    1.2 Distancia: 75-75
+    1.3 Magnificacion: 2X
+    1.4 Filtro: Rh
+    1.5 Voltaje: 28kVp
+    1.6 Eventos: 5e8
+

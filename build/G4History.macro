@@ -1,31 +1,84 @@
 /run/verbose 0
-/run/numberOfThreads 1
+/run/numberOfThreads 2
 /run/printProgress 1000000
 /control/execute detmask_config.in
 /Pepi/det/setBidimensional true
 /Pepi/det/setSourcePosZ -85 cm
-/Pepi/det/setSrcObjDistance 63.3 cm
-/Pepi/det/setObjectDetDistance 6.7 cm
+/Pepi/det/setSrcObjDistance 75 cm
+/Pepi/det/setObjectDetDistance 75 cm
 /Pepi/det/setMaskThickness 250 um
 /Pepi/det/setM2Pitch 62 um
 /Pepi/det/setM2Aperture 15 um
 /Pepi/det/setAcquisitionType conventional
-/Pepi/det/setDetType 1 COL
+/Pepi/det/setDetType 0 COL
 /Pepi/det/setThreshold1 4.9 keV
 /Pepi/det/setThreshold2 18.0 keV
 /Pepi/cont/loadConfig geometry_config.in
-/Pepi/cont/setBaseName FF10_00_19.25_2_kev_
+/Pepi/cont/setBaseName SBI_LUNGS_2_
 /run/initialize
 /control/execute gps.in
-/gps/ene/type Mono
-/gps/ene/mono 19.25 keV
+/gps/ene/type User
+/gps/hist/type energy
 /gps/particle gamma
 /gps/pos/type Beam
 /gps/pos/shape Circle
-/gps/pos/sigma_r 5.8649 um
+/gps/pos/sigma_r 5.12 um
 /gps/pos/centre 0 0. -85 cm
 /gps/ang/type iso
-/gps/ang/maxtheta 0.0142 rad
+/gps/ang/maxtheta 0.05 rad
 /gps/ang/rot1 -1 0 0
-/Pepi/cont/beamOn 1495000000
+/control/execute spectra/28kVFilterRh.in
+/gps/hist/point 2.80E-04 0.00E+00
+/gps/hist/point 8.40E-04 0.00E+00
+/gps/hist/point 1.40E-03 6.10E-45
+/gps/hist/point 1.96E-03 6.75E-21
+/gps/hist/point 2.52E-03 4.68E-10
+/gps/hist/point 3.08E-03 1.19E-07
+/gps/hist/point 3.64E-03 1.69E-28
+/gps/hist/point 4.20E-03 1.60E-18
+/gps/hist/point 4.76E-03 4.47E-12
+/gps/hist/point 5.32E-03 8.80E-08
+/gps/hist/point 5.88E-03 9.82E-05
+/gps/hist/point 6.44E-03 1.68E-02
+/gps/hist/point 7.00E-03 7.93E-01
+/gps/hist/point 7.56E-03 1.54E+01
+/gps/hist/point 8.12E-03 1.60E+02
+/gps/hist/point 8.68E-03 9.29E+02
+/gps/hist/point 9.24E-03 3.43E+03
+/gps/hist/point 9.80E-03 9.63E+03
+/gps/hist/point 1.04E-02 2.11E+04
+/gps/hist/point 1.09E-02 4.13E+04
+/gps/hist/point 1.15E-02 7.15E+04
+/gps/hist/point 1.20E-02 1.11E+05
+/gps/hist/point 1.26E-02 1.60E+05
+/gps/hist/point 1.32E-02 2.25E+05
+/gps/hist/point 1.37E-02 3.02E+05
+/gps/hist/point 1.43E-02 3.89E+05
+/gps/hist/point 1.48E-02 4.78E+05
+/gps/hist/point 1.54E-02 5.74E+05
+/gps/hist/point 1.60E-02 6.57E+05
+/gps/hist/point 1.65E-02 7.39E+05
+/gps/hist/point 1.71E-02 8.03E+05
+/gps/hist/point 1.76E-02 8.66E+05
+/gps/hist/point 1.82E-02 9.20E+05
+/gps/hist/point 1.88E-02 9.63E+05
+/gps/hist/point 1.93E-02 9.85E+05
+/gps/hist/point 1.99E-02 9.98E+05
+/gps/hist/point 2.04E-02 9.96E+05
+/gps/hist/point 2.10E-02 9.79E+05
+/gps/hist/point 2.16E-02 9.58E+05
+/gps/hist/point 2.21E-02 9.36E+05
+/gps/hist/point 2.27E-02 8.97E+05
+/gps/hist/point 2.32E-02 4.26E+05
+/gps/hist/point 2.38E-02 3.18E+04
+/gps/hist/point 2.44E-02 3.57E+04
+/gps/hist/point 2.49E-02 3.73E+04
+/gps/hist/point 2.55E-02 3.66E+04
+/gps/hist/point 2.60E-02 3.40E+04
+/gps/hist/point 2.66E-02 2.90E+04
+/gps/hist/point 2.72E-02 2.39E+04
+/gps/hist/point 2.77E-02 2.18E+03
+/Pepi/cont/beamOn 500000000
 /run/geometryModified
+/analysis/h1/getVector
+/analysis/h2/getVector

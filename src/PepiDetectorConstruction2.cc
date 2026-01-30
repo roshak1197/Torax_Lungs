@@ -50,6 +50,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PVParameterised.hh"
 #include "G4VPVParameterisation.hh"
+#include "G4EllipticalTube.hh"
 
 #include "G4SDManager.hh"
 #include "G4MultiFunctionalDetector.hh"
@@ -67,6 +68,7 @@
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
+#include "CADMesh.hh"
 
 #include <tuple>
 
@@ -107,7 +109,7 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   fEnvelopeM1Solid(0),
   fObjectSolid(0),
   fObject2Solid(0),
-  fObject3Solid(0),
+  //fObject3Solid(0),
   fObject5Solid(0),
   fObject6Solid(0),
   fSphereSolid(0),
@@ -257,9 +259,11 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   fWorldSizeY = 1*m;
   fWorldSizeZ = 2.3*m;
 
-  fObjSizeR = 0.1*cm;
-  fObjSizeY = 2*cm;  
-  fObjSizeX = 2*cm;
+  fObjSizeR = 1.6*cm;  
+  fObjSizeY = 1.0*cm;
+  fObjSizeR1 = 0.308*cm;
+  fObjSizeR2 = fObjSizeR-0.2*cm;
+  fObjSizeY1 = 5.632*cm; 
   
   fXd=0.025*mm; 
   fXd2=0.025*mm; 
@@ -281,11 +285,13 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   
   fPixelSize3X = 30*um;
   fPixelSize3Y = 30*um;
-  fPixelSize3Z = 250*um;
+  fPixelSize3Z = 200*um;
+  fDithe = 0*um;
   
-  fTras = 28.3*cm;
-  fTrasX = 0*um;
-  fTrasY = 0*um;
+  fTras = 5*cm;//28.7*cm; 
+  fTras_obj = 20.8*um;
+  fTrasX = 400*um;
+  fTrasY = -100*um;
   
   fMessenger = new PepiDetectorMessenger(this);
 }
@@ -335,7 +341,7 @@ void PepiDetectorConstruction2::DefineMaterials()
   G4Material* Air           = nist->FindOrBuildMaterial("G4_AIR");
   G4Material* PlexiGlass    = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
   G4Material* Water         = nist->FindOrBuildMaterial("G4_WATER");
-//  G4Material* Nylon  	    = nist->FindOrBuildMaterial("G4_NYLON-6-6");
+  //G4Material* Nylon  	    = nist->FindOrBuildMaterial("G4_NYLON-6-6");
   G4Material* PolyCarbonate = nist->FindOrBuildMaterial("G4_POLYCARBONATE");
   G4Material* Silicon       = nist->FindOrBuildMaterial("G4_Si");
   G4Material* Graphite      = nist->FindOrBuildMaterial("G4_GRAPHITE");
@@ -343,10 +349,14 @@ void PepiDetectorConstruction2::DefineMaterials()
   G4Material* Trioxide      = nist->FindOrBuildMaterial("G4_ALUMINUM_OXIDE"); 
   G4Material* Cellulose     = nist->FindOrBuildMaterial("G4_CELLULOSE_CELLOPHANE");
   G4Material* C             = nist->FindOrBuildMaterial("G4_C");
+  G4Material* Titanium      = nist->FindOrBuildMaterial("G4_Ti");
   G4Element* H              = nist->FindOrBuildElement("H");
   G4Element* P              = nist->FindOrBuildElement("P");
   G4Element* O              = nist->FindOrBuildElement("O");
   G4Element* Ca             = nist->FindOrBuildElement("Ca");
+  G4Material* Bone 	    = nist->FindOrBuildMaterial("G4_B-100_BONE");
+  G4Material* Skin          = nist -> FindOrBuildMaterial("G4_SKIN_ICRP");
+  G4Material* Lung          = nist -> FindOrBuildMaterial("G4_LUNG_ICRP");
   
   
  // G4Material* Blood         = nist->FindOrBuildMaterial("G4_BLOOD_ICRP");
@@ -366,32 +376,10 @@ void PepiDetectorConstruction2::DefineMaterials()
   G4String name;
   G4int ncomponents;
   
-  density1 = 3.21*g/cm3;//3.21*g/cm3;
+  density1 = 4.93*g/cm3;//4.93*g/cm3;// 3.21*g/cm3;
   G4Material* SiC = new G4Material(name="SandP",density1,ncomponents=2);
-  SiC ->AddMaterial(Silicon, fractionmass=70.05*perCent);
-  SiC ->AddMaterial(C, fractionmass=29.95*perCent);
-  
-  //=========================================
-  //         HIDROXYAPATITE MATERIAL (HCa5P3O13)
-  //=========================================
-/*
-  G4double density2; 
-  
-  density2 = 3.16*g/cm3;
-  G4int natoms;
-  
-  G4Material* Hidrox = new G4Material(name="Hidrox2", density2, ncomponents=4);
-  Hidrox ->AddElement(H, natoms=1);
-  Hidrox ->AddElement(Ca, natoms=5);
-  Hidrox ->AddElement(P, natoms=3);
-  Hidrox ->AddElement(O, natoms=13);
-*/  
- // density3 = 3.1*g/cm3;
-
- // G4Material* MicroC = new G4Material(name="MicroC", density3, ncomponents=2);
- // MicroC -> AddMaterial(Hidrox, fractionmass=70*perCent);
- // MicroC -> AddMaterial(Water, fractionmass=30*perCent);
- 
+  SiC ->AddMaterial(Titanium, fractionmass=50*perCent);//fractionmass=70.05*perCent
+  SiC ->AddMaterial(C, fractionmass=50*perCent);//fractionmass=29.95*perCent
  
    G4double zH,aH,zC,aC,zO,aO,zN,aN,zAr,aAr,zI,aI,zNa,aNa,zP,aP,zS,aS,zCl,aCl,zK,aK,zFe,aFe,zAl,aAl,aCa,zCa,aSi,zSi,fractionmassA,densityN, densityA,fractionmassPI, densityPI,fractionmassB, densityB, densityAl, densityHPA,densityFGR,densityDBT1, fractionmassFGR,densityADP,fractionmassADP,densityDBT,fractionmassDBT,fractionmassDBT1,densityPQ595,fractionmassPQ595,fractionmassPQ3070,densityPQ3070,fractionmassPQ5050,densityPQ5050,densitySilicone,densityPMMA,fractionmassPMMA,fractionmassMuscle,densityMuscle,fractionmassAorta,densityAorta;
   
@@ -436,7 +424,7 @@ void PepiDetectorConstruction2::DefineMaterials()
 //  aAg = 107.86*g/mole;
   G4Material* Silver1 = nist->FindOrBuildMaterial("G4_Ag");
   //Nylon
-  densityN = 3.4*g/cm3;
+  densityN = 1.4*g/cm3;
   G4Material* Nylon = new G4Material(nameNy="Nylon", densityN, ncomponentsNy = 4);
   Nylon -> AddElement(Carbon1, natomsNy = 6);
   Nylon -> AddElement(Hydrogen1, natomsNy = 11);
@@ -609,6 +597,9 @@ void PepiDetectorConstruction2::DefineMaterials()
   std::vector<double> CelluloseDelta = LoadDelta("../data/Cellulose_delta.txt");
   std::vector<double> SiCDelta = LoadDelta("../data/SiC_delta.txt");
   std::vector<double> WaxDelta = LoadDelta("../data/Wax_delta.txt");	
+  std::vector<double> BoneDelta = LoadDelta("../data/Bone_delta.txt");
+  std::vector<double> SkinDelta = LoadDelta("../data/Skin_delta.txt");
+  std::vector<double> LungDelta = LoadDelta("../data/Skin_delta.txt");
   
   
   G4int NumEntries = static_cast<int>(energies.size()); 
@@ -638,6 +629,9 @@ void PepiDetectorConstruction2::DefineMaterials()
   std::vector<double> CelluloseRindex(NumEntries);
   std::vector<double> SiCRindex(NumEntries);
   std::vector<double> WaxRindex(NumEntries);
+  std::vector<double> BoneRindex(NumEntries);
+  std::vector<double> SkinRindex(NumEntries);
+  std::vector<double> LungRindex(NumEntries);
   
   for (G4int i = 0; i < NumEntries; ++i)
   {
@@ -669,6 +663,9 @@ void PepiDetectorConstruction2::DefineMaterials()
     CelluloseRindex[i]       = 1 - CelluloseDelta[i];
     SiCRindex[i]         = 1 - SiCDelta[i];
     WaxRindex[i]         = 1 - WaxDelta[i];
+    BoneRindex[i]	    = 1 - BoneDelta[i];
+    SkinRindex[i]	    = 1 - SkinDelta[i];
+    LungRindex[i]	    = 1 - LungDelta[i];
  }
  
 
@@ -797,6 +794,18 @@ void PepiDetectorConstruction2::DefineMaterials()
   WaxMatPropTbl->AddProperty("RINDEX",energies.data(),WaxRindex.data(),NumEntries);
   Wax->SetMaterialPropertiesTable(WaxMatPropTbl);
 
+  G4MaterialPropertiesTable* BoneMatPropTbl = new G4MaterialPropertiesTable();
+  BoneMatPropTbl->AddProperty("RINDEX",energies.data(),BoneRindex.data(),NumEntries);
+  Bone->SetMaterialPropertiesTable(BoneMatPropTbl);
+
+  G4MaterialPropertiesTable* SkinMatPropTbl = new G4MaterialPropertiesTable();
+  SkinMatPropTbl->AddProperty("RINDEX",energies.data(),SkinRindex.data(),NumEntries);
+  Skin->SetMaterialPropertiesTable(SkinMatPropTbl); 
+
+  G4MaterialPropertiesTable* LungMatPropTbl = new G4MaterialPropertiesTable();
+  LungMatPropTbl->AddProperty("RINDEX",energies.data(),LungRindex.data(),NumEntries);
+  Lung->SetMaterialPropertiesTable(LungMatPropTbl);
+
 
   
  
@@ -809,12 +818,14 @@ void PepiDetectorConstruction2::DefineMaterials()
   fIonCMaterial     = Air;// Vacuum1;
   fDetectorMaterial = CdTe;
   fMaskMaterial     = Gold;
-  fObjectMaterial   = Air;//PlexiGlass;
-  fObject2Material  = Air;//Wax;
-  fObject3Material  = Air;//Wax;
+  fObjectMaterial   = Air;
+  fObject2Material  = Lung;//Adipose;
+  fObject3Material  = Muscle;
+  fObject4Material  = Air;//Bone;
+  fObject5Material  = Air;
   fSubMaterial	    = Air;//Trioxide;
   fSphereMaterial   = Air;//SiC;
-  fMuscleMaterial   = Air;//Cellulose;
+  fMuscleMaterial   = Air;// Cellulose;
   fObject5Material  = Blood;//
 //  fObject6Material  = Molybdenum1; Silver1;
   fObject6Material  = PlaqueS;// Molybdenum1;
@@ -828,13 +839,13 @@ void PepiDetectorConstruction2::DefineVolumes()
   // - PIXIRAD Parameters
 
 
-  fnPixelsX = 256;
+  fnPixelsX = 256*4;
 
   // - The y-dimension of PixiRad changes if we want
   // a bidimensional acquisition or not
   if (fBidimensional)
   {
-    fnPixelsY = 256;
+    fnPixelsY = 256*4;
   }
   else
   {
@@ -963,7 +974,7 @@ void PepiDetectorConstruction2::DefineVolumes()
                                  
  fSphereSolid = new G4Sphere("sphere1",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -979,9 +990,9 @@ fSphereLogical = new G4LogicalVolume(fSphereSolid,
  
  // Build the Speckel's Envelope 
   fSandSolid =  new G4Box("SandDet",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*4*um/2,              //its size
+                             125*256*4*um/2,
+                             125*um/2);        
       
   fSandLogical =  new G4LogicalVolume(fSandSolid,    //its solid
                                       fWorldMaterial,   //its material
@@ -989,10 +1000,10 @@ fSphereLogical = new G4LogicalVolume(fSphereSolid,
  
   
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
- //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
- 
-  std::vector<G4ThreeVector> coordinates = ReadCoordinates("../data/58_um_Coord1.txt");
- G4int Numb_speck = 300000;
+//      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
+
+  std::vector<G4ThreeVector> coordinates = ReadCoordinates("../data/125_um_Coord_copy.txt");
+ G4int Numb_speck =1700000;
  
  for(G4int i = 0; i < Numb_speck; i ++)
  {
@@ -1038,13 +1049,10 @@ fSphereLogical = new G4LogicalVolume(fSphereSolid,
     // ========================================
     //               Sand_paper 2
     // ========================================
-    
-
- 
                                  
  fSphere5Solid = new G4Sphere("sphere5",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1060,9 +1068,9 @@ fSphere5Logical = new G4LogicalVolume(fSphere5Solid,
  
  // Build the Speckel's Envelope 
   fSand3Solid =  new G4Box("SandDet3",                    //its name                 
-                             fPixiRadSize2Y/2,              //its size
-                             fPixiRadSize2Y/2,
-                             fPixiRadSize2Z/2);        
+                            125*256*4*um/2,              //its size
+                             125*256*4*um/2,
+                             125*um/2);        
       
   fSand3Logical =  new G4LogicalVolume(fSand3Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1070,8 +1078,8 @@ fSphere5Logical = new G4LogicalVolume(fSphere5Solid,
  
   
   
-  std::vector<G4ThreeVector> coordinates2 = ReadCoordinates("../data/58_um_Coord2.txt");
- G4int Numb_speck2 = 300000;
+  std::vector<G4ThreeVector> coordinates2 = ReadCoordinates("../data/125_um_Coord2_copy.txt");
+ G4int Numb_speck2 = 1700000;
  
  for(G4int i = 0; i < Numb_speck2; i ++)
  {
@@ -1098,7 +1106,7 @@ fSphere5Logical = new G4LogicalVolume(fSphere5Solid,
  }                                          
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand3 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + fPixiRadSize2Z);
+  G4ThreeVector positionSand3 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 125*um);
   fSand3Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand3,					   //its position
                                        fSand3Logical,                                    //its logical volume
@@ -1116,13 +1124,13 @@ fSphere5Logical = new G4LogicalVolume(fSphere5Solid,
      // ========================================
     //               Sand_paper 3
     // ========================================
-    
+   
 
  
                                  
  fSphere6Solid = new G4Sphere("sphere6",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1138,9 +1146,9 @@ fSphere6Logical = new G4LogicalVolume(fSphere6Solid,
  
  // Build the Speckel's Envelope 
   fObject5Solid =  new G4Box("SandDet4",                    //its name                 
-                             fPixiRadSize2Y/2,              //its size
-                             fPixiRadSize2Y/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*4*um/2,              //its size
+                             125*256*4*um/2,
+                             125*um/2);        
       
   fObject5Logical =  new G4LogicalVolume(fObject5Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1148,8 +1156,8 @@ fSphere6Logical = new G4LogicalVolume(fSphere6Solid,
  
   
   
- std::vector<G4ThreeVector> coordinates3 = ReadCoordinates("../data/58_um_Coord3.txt");
- G4int Numb_speck3 = 300000;
+ std::vector<G4ThreeVector> coordinates3 = ReadCoordinates("../data/125_um_Coord3_copy.txt");
+ G4int Numb_speck3 = 1700000;
  
  for(G4int i = 0; i < Numb_speck3; i ++)
  {
@@ -1176,7 +1184,7 @@ fSphere6Logical = new G4LogicalVolume(fSphere6Solid,
  }                                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand4 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 2*fPixiRadSize2Z);
+  G4ThreeVector positionSand4 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 2*125*um);
   fObject5Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand4,					   //its position
                                        fObject5Logical,                                    //its logical volume
@@ -1200,7 +1208,7 @@ fSphere6Logical = new G4LogicalVolume(fSphere6Solid,
                                  
  fSphere7Solid = new G4Sphere("sphere7",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1216,9 +1224,9 @@ fSphere7Logical = new G4LogicalVolume(fSphere7Solid,
  
  // Build the Speckel's Envelope 
   fObject6Solid =  new G4Box("SandDet5",                    //its name                 
-                             fPixiRadSize2Y/2,              //its size
-                             fPixiRadSize2Y/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*4*um/2,              //its size
+                             125*256*4*um/2,
+                             125*um/2);        
       
   fObject6Logical =  new G4LogicalVolume(fObject6Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1226,8 +1234,8 @@ fSphere7Logical = new G4LogicalVolume(fSphere7Solid,
  
   
   
-  std::vector<G4ThreeVector> coordinates4 = ReadCoordinates("../data/58_um_Coord4.txt");
- G4int Numb_speck4 = 300000;
+  std::vector<G4ThreeVector> coordinates4 = ReadCoordinates("../data/125_um_Coord4_copy.txt");
+ G4int Numb_speck4 = 1700000;
  
  for(G4int i = 0; i < Numb_speck4; i ++)
  {
@@ -1254,7 +1262,7 @@ fSphere7Logical = new G4LogicalVolume(fSphere7Solid,
  }                                            
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand5 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 3*fPixiRadSize2Z);
+  G4ThreeVector positionSand5 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 3*125*um);
   fObject6Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand5,					   //its position
                                        fObject6Logical,                                    //its logical volume
@@ -1269,15 +1277,16 @@ fSphere7Logical = new G4LogicalVolume(fSphere7Solid,
   fObject6Logical->SetRegion(aRegion6);
   aRegion6->AddRootLogicalVolume(fObject6Logical);
   
+  
         // ========================================
     //               Sand_paper 5
     // =========================================
-
- /*
+/*
+ 
                                  
  fSphere9Solid = new G4Sphere("sphere9",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1293,9 +1302,9 @@ fSphere9Logical = new G4LogicalVolume(fSphere9Solid,
  
  // Build the Speckel's Envelope 
   fSand4Solid =  new G4Box("SandDet6",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);        
       
   fSand4Logical =  new G4LogicalVolume(fSand4Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1305,8 +1314,8 @@ fSphere9Logical = new G4LogicalVolume(fSphere9Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates5 = ReadCoordinates("../data/58_um_Coord5.txt");
- G4int Numb_speck5 = 300000;
+  std::vector<G4ThreeVector> coordinates5 = ReadCoordinates("../data/125_um_Coord5.txt");
+ G4int Numb_speck5 = 112000;
  
  for(G4int i = 0; i < Numb_speck5; i ++)
  {
@@ -1333,7 +1342,7 @@ fSphere9Logical = new G4LogicalVolume(fSphere9Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand6 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 4*fPixiRadSize2Z);
+  G4ThreeVector positionSand6 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 4*125*um);
   fSand4Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand6,					   //its position
                                        fSand4Logical,                                    //its logical volume
@@ -1352,11 +1361,11 @@ fSphere9Logical = new G4LogicalVolume(fSphere9Solid,
     //               Sand_paper 6
     // =========================================
 
- 
+
                                  
  fSphere10Solid = new G4Sphere("sphere10",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1372,9 +1381,9 @@ fSphere10Logical = new G4LogicalVolume(fSphere10Solid,
  
  // Build the Speckel's Envelope 
   fSand5Solid =  new G4Box("SandDet7",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);      
       
   fSand5Logical =  new G4LogicalVolume(fSand5Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1384,8 +1393,8 @@ fSphere10Logical = new G4LogicalVolume(fSphere10Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates6 = ReadCoordinates("../data/58_um_Coord6.txt");
- G4int Numb_speck6 = 300000;
+  std::vector<G4ThreeVector> coordinates6 = ReadCoordinates("../data/125_um_Coord6.txt");
+ G4int Numb_speck6 = 112000;
  
  for(G4int i = 0; i < Numb_speck6; i ++)
  {
@@ -1412,7 +1421,7 @@ fSphere10Logical = new G4LogicalVolume(fSphere10Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand7 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 5*fPixiRadSize2Z);
+  G4ThreeVector positionSand7 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 5*125*um);
   fSand5Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand7,					   //its position
                                        fSand5Logical,                                    //its logical volume
@@ -1435,7 +1444,7 @@ fSphere10Logical = new G4LogicalVolume(fSphere10Solid,
                                  
  fSphere11Solid = new G4Sphere("sphere11",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1451,9 +1460,9 @@ fSphere11Logical = new G4LogicalVolume(fSphere11Solid,
  
  // Build the Speckel's Envelope 
   fSand6Solid =  new G4Box("SandDet8",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);        
       
   fSand6Logical =  new G4LogicalVolume(fSand6Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1463,8 +1472,8 @@ fSphere11Logical = new G4LogicalVolume(fSphere11Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates7 = ReadCoordinates("../data/58_um_Coord7.txt");
- G4int Numb_speck7 = 300000;
+  std::vector<G4ThreeVector> coordinates7 = ReadCoordinates("../data/125_um_Coord7.txt");
+ G4int Numb_speck7 = 112000;
  
  for(G4int i = 0; i < Numb_speck7; i ++)
  {
@@ -1491,7 +1500,7 @@ fSphere11Logical = new G4LogicalVolume(fSphere11Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand8 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 6*fPixiRadSize2Z);
+  G4ThreeVector positionSand8 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 6*125*um);
   fSand6Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand8,					   //its position
                                        fSand6Logical,                                    //its logical volume
@@ -1514,7 +1523,7 @@ fSphere11Logical = new G4LogicalVolume(fSphere11Solid,
                                  
  fSphere12Solid = new G4Sphere("sphere12",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1530,9 +1539,9 @@ fSphere12Logical = new G4LogicalVolume(fSphere12Solid,
  
  // Build the Speckel's Envelope 
   fSand7Solid =  new G4Box("SandDet9",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);        
       
   fSand7Logical =  new G4LogicalVolume(fSand7Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1542,8 +1551,8 @@ fSphere12Logical = new G4LogicalVolume(fSphere12Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates8 = ReadCoordinates("../data/58_um_Coord8.txt");
- G4int Numb_speck8 = 300000;
+  std::vector<G4ThreeVector> coordinates8 = ReadCoordinates("../data/125_um_Coord8.txt");
+ G4int Numb_speck8 = 112000;
  
  for(G4int i = 0; i < Numb_speck8; i ++)
  {
@@ -1570,7 +1579,7 @@ fSphere12Logical = new G4LogicalVolume(fSphere12Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand9 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 7*fPixiRadSize2Z);
+  G4ThreeVector positionSand9 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 7*125*um);
   fSand7Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand9,					   //its position
                                        fSand7Logical,                                    //its logical volume
@@ -1588,12 +1597,11 @@ fSphere12Logical = new G4LogicalVolume(fSphere12Solid,
   //  ======================================
     //               Sand_paper 9
     // =========================================
-
- 
+/* 
                                  
  fSphere13Solid = new G4Sphere("sphere13",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1609,9 +1617,9 @@ fSphere13Logical = new G4LogicalVolume(fSphere13Solid,
  
  // Build the Speckel's Envelope 
   fSand8Solid =  new G4Box("SandDet10",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);        
       
   fSand8Logical =  new G4LogicalVolume(fSand8Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1621,8 +1629,8 @@ fSphere13Logical = new G4LogicalVolume(fSphere13Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates9 = ReadCoordinates("../data/58_um_Coord9.txt");
- G4int Numb_speck9 = 300000;
+  std::vector<G4ThreeVector> coordinates9 = ReadCoordinates("../data/125_um_Coord9.txt");
+ G4int Numb_speck9 = 112000;
  
  for(G4int i = 0; i < Numb_speck9; i ++)
  {
@@ -1649,7 +1657,7 @@ fSphere13Logical = new G4LogicalVolume(fSphere13Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand10 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 8*fPixiRadSize2Z);
+  G4ThreeVector positionSand10 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 8*125*um);
   fSand8Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand10,					   //its position
                                        fSand8Logical,                                    //its logical volume
@@ -1672,7 +1680,7 @@ fSphere13Logical = new G4LogicalVolume(fSphere13Solid,
                                  
  fSphere14Solid = new G4Sphere("sphere14",
 			      0*mm,                         //its R_min
-			      fPixelSize2X/2,               // its R_max
+			      125*um/2,               // its R_max
 			      0*deg,		            //its symetric angle azim
 			      360*deg,                     // its final angle 
 			      0*deg,                       //its symetric zenith angle
@@ -1688,9 +1696,9 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
  
  // Build the Speckel's Envelope 
   fSand9Solid =  new G4Box("SandDet11",                    //its name                 
-                             fPixiRadSize2X/2,              //its size
-                             fPixiRadSize2X/2,
-                             fPixiRadSize2Z/2);        
+                             125*256*um/2,              //its size
+                             125*256*um/2,
+                             125*um/2);        
       
   fSand9Logical =  new G4LogicalVolume(fSand9Solid,    //its solid
                                       fWorldMaterial,   //its material
@@ -1700,8 +1708,8 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
  // G4double x1 = + j*fPixelSize2X - fPixiRadSize2X/2;// + fPixelSizeX/2;
  //      G4double y1 = - i*fPixelSize2X + fPixiRadSize2X/2;// - fPixelSizeY/2;
  
-  std::vector<G4ThreeVector> coordinates10 = ReadCoordinates("../data/58_um_Coord10.txt");
- G4int Numb_speck10 = 300000;
+  std::vector<G4ThreeVector> coordinates10 = ReadCoordinates("../data/125_um_Coord10.txt");
+ G4int Numb_speck10 = 112000;
  
  for(G4int i = 0; i < Numb_speck10; i ++)
  {
@@ -1728,7 +1736,7 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
  }                             
  
  // - Place the Sandpaper Envelope in the World
-  G4ThreeVector positionSand11 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 9*fPixiRadSize2Z);
+  G4ThreeVector positionSand11 = G4ThreeVector(0*um+fTrasX, 0*um+fTrasY, fSourcePosZ+fSrcObjDistance -fTras + 9*125*um);
   fSand9Physical = new G4PVPlacement(0,                                                  //its rotation
                                        positionSand11,					   //its position
                                        fSand9Logical,                                    //its logical volume
@@ -1793,290 +1801,103 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
   // ========================================
   //                 Objects
   // ========================================
+  // - Build the Object
 
+  G4RotationMatrix* rotMat =  new G4RotationMatrix();
+  rotMat->rotateX(90*deg);
+  rotMat->rotateZ(fRotAngle);
 
+  G4ThreeVector objectPosition = G4ThreeVector(0.*mm+fTras_obj+fDithe,0,fSourcePosZ+fSrcObjDistance-fObjSizeR+fObjSizeR1+fObjSizeR2/2+1*cm);
 
+  //auto RibcageS = CADMesh::TessellatedMesh::FromSTL("../data/Ribcage.stl")->GetSolid();
+  auto LungsS = CADMesh::TessellatedMesh::FromSTL("../data/Lungs.stl")->GetSolid();
+  //auto ThyroidS = CADMesh::TessellatedMesh::FromSTL("../data/Thyroid.stl")->GetSolid();
 
-  // -------Build the PMMA phantom box ----------------------------------------
+  fObjectSolid = new G4EllipticalTube("Torax",                         //its name
+                            fObjSizeR+1*cm,                     //xSemiAxis
+                            fObjSizeR2,                     //ySemiAxis
+                            fPixiRadSizeY/2);                //its half lenght Z
 
-  fObjectSolid =  new G4Box("PMMA_BOX",                    //its name                 
-                             fPixiRadSize3X/2,              //its size
-                             fPixiRadSize3Y/2,
-                             fPixiRadSize3Z/2);        
-      
-  fObjectLogical =  new G4LogicalVolume(fObjectSolid,    //its solid
-                                         fObjectMaterial,   //its material
-                                         "PMMA_BOX");       //its name
-                                         
-                                         
-                                         
-                                         
+  auto ToraxL = new G4SubtractionSolid("Inner0", fObjectSolid, LungsS);
+  //auto ToraxLR = new G4SubtractionSolid("Inner1", ToraxL, RibcageS);
+  //auto ToraxLRT = new G4SubtractionSolid("Inner2", ToraxLR, ThyroidS);
 
-                           
-  G4ThreeVector positionPMMA = G4ThreeVector(0, 0, fSourcePosZ+fSrcObjDistance);
-  fObjectPhysical = new G4PVPlacement(0,                                                  //its rotation
-                                       positionPMMA,					   //its position
-                                       fObjectLogical,                                    //its logical volume
-                                       "PMMA_BOX",                                          //its name
-                                       fWorldLogical,                                      //its mother volume
-                                       false,                                              //no boolean operation
-                                       0,                                                  //copy number
-                                       fCheckOverlaps);                                    //checking overlaps
+  fObjectLogical = new G4LogicalVolume(ToraxL,
+				          fObject3Material,
+					  "logicalT");
+  fScoringVolume=fObjectLogical;
 
-// -------------------------------------------------------------------------------
+  G4ThreeVector objectPosition2 = G4ThreeVector(0.*mm+fDithe,0,fSourcePosZ+fSrcObjDistance-fObjSizeR+fObjSizeR1/2+0.1*cm);
 
+  fObject2Solid = new G4Box("CubeDoses",                               //its name
+                          fObjSizeY1/2,   //its size
+                          fObjSizeY1/2,
+                          fObjSizeR1/2);
 
-// ----BUILD A WAX BOX ----------------------------------------------------------  
-  
-fObject2Solid =  new G4Box("WaxBox",                    //its name                 
-                             fPixiRadSize3X/2,              //its size
-                             fPixiRadSize3Y/2,
-                            0.214*fPixiRadSize3Z/2);        
-      
-  fObject2Logical =  new G4LogicalVolume(fObject2Solid,    //its solid
-                                         fObject2Material,   //its material
-                                         "WaxBox");       //its name
-                                         
-                                         
-                                         
-                                         
+  fObject2Logical = new G4LogicalVolume(fObject2Solid,       //its solid
+                                       fObjectMaterial,    //its material
+                                       "CubeDosesLV");          //its name   
+//  fScoringVolume=fObject2Logical;
 
-                           
-  G4ThreeVector positionWax = G4ThreeVector(0, 0, fSourcePosZ+fSrcObjDistance- fPixiRadSize3Z/2 -0.214*fPixiRadSize3Z/2);
-  fObject2Physical = new G4PVPlacement(0,                                                  //its rotation
-                                       positionWax,					   //its position
-                                       fObject2Logical,                                    //its logical volume
-                                       "WaxBox",                                          //its name
-                                       fWorldLogical,                                      //its mother volume
-                                       false,                                              //no boolean operation
-                                       0,                                                  //copy number
-                                      fCheckOverlaps);                                    //checking overlaps
+  auto RibcageSLogical = new G4LogicalVolume(LungsS,
+				          fObjectMaterial,
+					  "logicalR");
+  fObject3Logical = RibcageSLogical;
+//  fScoringVolume=fObject3Logical;
 
-                                      
-// -----------------NYLON FIBER----------------------------------------------------------------
-/*
- fObject3Solid = new G4Box("Trap3",                         //its name
-                            0.2*mm,                             //its half x1
-                            1*cm,                     //its half x2
-                            0.2*mm                     //its half y1
-                        //    0.5*fObjSizeY,                     //its half y2
-                        //    fObjSizeR
-                        );                //its half height
-                            
-  fObject3Logical = new G4LogicalVolume(fObject3Solid,       //its solid
-  					fObject3Material,       //fObject3Material,     //its material
-                                       "Trap3LV");          //its name
-  
-  G4ThreeVector objectPosition3 = G4ThreeVector(0, 0, 0 );
-  
-  
-  G4RotationMatrix* rotMat2 =  new G4RotationMatrix();
-  rotMat2->rotateZ(45*deg);
-  //rotMat2->rotateY(45*deg);
-  
-  
-  fObject3Physical = new G4PVPlacement(rotMat2,              //its rotation
-                                      objectPosition3,       //its translation
-                                      fObject3Logical,      //its logical volume
-                                      "Trap3",              //its name
-                                      fObject2Logical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps
-
-
-
-*/
-//-------  BUILD A 3mm PMMA thick cover ----------------------------------------------------                                    
-                                       
-
-fSphere2Solid = new G4Box("Cover",
- 			      fPixiRadSize3X/2,              //its size
-                             fPixiRadSize3Y/2,
-                             0.0888*fPixiRadSize3Z/2); 
-                             
-fSphere2Logical = new G4LogicalVolume(fSphere2Solid,
-				       fObjectMaterial,
-				       "CoverLv");
-				       
-				       
-				       	    		      				                                     
- G4ThreeVector objectPosition4 = G4ThreeVector(0, 0, fSourcePosZ+fSrcObjDistance-fPixiRadSize3Z/2 -0.214*fPixiRadSize3Z - 0.0888*fPixiRadSize3Z/2); 
- // G4RotationMatrix* rotMat2 =  new G4RotationMatrix();
- // rotMat2->rotateZ(fRotAngle);
-  
- 
- 
- fSphere2Physical = new G4PVPlacement(0,              //its rotation
-                                      objectPosition4,       //its translation
-                                      fSphere2Logical,      //its logical volume
-                                      "tube1",              //its name
+  fObjectPhysical = new G4PVPlacement(rotMat,
+		   			objectPosition,
+		   			fObjectLogical,
+		   			"PhysicalT",
+		   			fWorldLogical,
+		   			false,
+		   			0,
+					true);
+  fObject2Physical = new G4PVPlacement(0,              //its rotation
+                                      objectPosition2,       //its translation
+                                      fObject2Logical,      //its logical volume
+                                      "CubeDoses",              //its name
                                       fWorldLogical,       //its mother volume
                                       false,               //no boolean operation
                                       0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps  
-                                 
-// ------------------------ end objects ----------------------------------------  
-/*
-//==================================
- //   FILTERS
- //==================================
+                                      fCheckOverlaps);     //checking overlaps 
 
-  fObject5Solid = new G4Box("Filter",                               //its name
-                          10*cm/2,   //its size
-                          10*cm/2,
-                          fXd/2);
+  fObject3Physical = new G4PVPlacement(rotMat,
+		   			objectPosition,
+		   			fObject3Logical,
+		   			"PhysicalR",
+		   			fWorldLogical,
+		   			false,
+		   			0,
+					true);
+G4double alveolusRadius = 2.0*mm;
 
-  fObject5Logical = new G4LogicalVolume(fObject5Solid,       //its solid
-                                       fObject5Material,    //its material
-                                       "FilterLV");          //its name
-  G4ThreeVector objectPosition5 = G4ThreeVector(0,0,3*cm+fSourcePosZ);  
-  
-    fObject6Solid = new G4Box("Filter2",                               //its name
-                          10*cm/2,   //its size
-                          10*cm/2,
-                          fXd2/2);
+auto AlveolusS = new G4Sphere(
+    "Alveolus",
+    0.,
+    alveolusRadius,
+    0.*deg, 360.*deg,
+    0.*deg, 180.*deg
+); 
+auto AlveolusLV = new G4LogicalVolume(
+    AlveolusS,
+    fObject2Material,
+    "AlveolusLV"
+);
+G4ThreeVector alveolusPos( +20*mm, 0*mm, 0*mm );
+if (LungsS->Inside(alveolusPos) == kInside) {
 
-  fObject6Logical = new G4LogicalVolume(fObject6Solid,       //its solid
-                                       fObject6Material,    //its material
-                                       "Filter2LV");          //its name
-  G4ThreeVector objectPosition6 = G4ThreeVector(0,0,3*cm+fSourcePosZ+fXd2/2+fXd/2);   
- 
-  fObject6Physical = new G4PVPlacement(0,              //its rotation
-                                      objectPosition6,       //its translation
-                                     fObject6Logical,      //its logical volume
-                                      "Filter2",              //its name
-                                      fWorldLogical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps
-
-
-
-  fObject5Physical = new G4PVPlacement(0,              //its rotation
-                                      objectPosition5,       //its translation
-                                     fObject5Logical,      //its logical volume
-                                      "Filter",              //its name
-                                      fWorldLogical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps
-*/
-                                   
- //==================================
- //   A TUBE SAMPLE PMMA
- //==================================
-/* 
-  G4RotationMatrix* rotMat2 =  new G4RotationMatrix();
-  rotMat2->rotateX(90*deg);
-  
-  fSphere2Solid = new G4Tubs("tube1",
- 			      0 *cm,
-	    		      0.194/2 *cm,
-	    		      5*cm,
-	    		      0,
-	    		      2*pi);
-fSphere2Logical = new G4LogicalVolume(fSphere2Solid,
-				       fObjectMaterial,
-				       "TubeLV");
-				       	    		      				                                     
- G4ThreeVector objectPosition4 = G4ThreeVector(0*mm, 0, fSourcePosZ+fSrcObjDistance); 
- 
- fSphere2Physical = new G4PVPlacement(rotMat2,              //its rotation
-                                      objectPosition4,       //its translation
-                                      fSphere2Logical,      //its logical volume
-                                      "tube1",              //its name
-                                      fWorldLogical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps    
-
-*/
-/*                                    
-//==================================
- //   A TUBE SAMPLE Blood
- //==================================
-  
-  fSphere7Solid = new G4Tubs("tube2",
- 			      0.0 *cm,
-	    		      0.185/2 *cm,
-	    		      5*cm,
-	    		      0*deg,
-	    		      360*deg);
-fSphere7Logical = new G4LogicalVolume(fSphere7Solid,
-				       fWorldMaterial,
-				       "TubeLV2");
-				       	    		      				                                     
- G4ThreeVector objectPosition7 = G4ThreeVector(0*mm, 0, fSourcePosZ+fSrcObjDistance); 
- 
- fSphere7Physical = new G4PVPlacement(rotMat2,              //its rotation
-                                      objectPosition7,       //its translation
-                                      fSphere7Logical,      //its logical volume
-                                      "tube2",              //its name
-                                      fWorldLogical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps                                            
-                                      
-
-
-
-//===========================================
-//            HPA SAMPLE
-//===========================================
-
-fSphere6Solid = new G4Tubs("tube3",
-			      0.0*cm,                         //its R_min
-			      0.185/2*cm,   			     // its R_max
-			      5*cm,		            //its symetric angle azim
-			      0*deg,                     // its final angle 
-			      45*deg);                       //its symetric zenith angle)//its final angle zenith
-
-
-fSphere6Logical = new G4LogicalVolume(fSphere6Solid, 
-				      fObject6Material,
-				      "Tube3LV");
-G4ThreeVector objectPositionSph = G4ThreeVector(0*mm, 0, 0);
-
-fSphere6Physical = new G4PVPlacement(0, 
-				    objectPositionSph,
-				    fSphere6Logical, 
-				    "Tube3PV",
-				    fSphere7Logical, 
-				    false, 
-				    0,
-				    fCheckOverlaps);
-
-
-*/
-				      
-//===========================================
-//            A SILICON CIRCLE TO RETRIEVE
-//===========================================
-
-fSphere8Solid = new G4Sphere("sphere8",
-                              0*mm,                         //its R_min
-                              0.54*mm,                               // its R_max
-                              0*deg,                        //its symetric angle azim
-                              360*deg,                     // its final angle 
-                              0*deg,                       //its symetric zenith angle
-                              360*deg);                     //its final angle zenith
-
-
-fSphere8Logical = new G4LogicalVolume(fSphere8Solid, 
-                                      fSubMaterial,
-                                      "SphereLV8");
-G4ThreeVector objectPositionSph8 = G4ThreeVector(0*mm, 0, 0);
-
-fSphere8Physical = new G4PVPlacement(0, 
-                                    objectPositionSph8,
-                                    fSphere8Logical, 
-                                    "spherePV8",
-                                    fObject2Logical, 
-                                    false, 
-                                    0,
-                                    fCheckOverlaps);
-
+    new G4PVPlacement(
+        0,                    // sin rotación
+        alveolusPos,          // posición local al pulmón
+        AlveolusLV,
+        "AlveolusPV",
+        fObject3Logical,      // 👈 mother = pulmón
+        false,
+        0,
+        true                 // check overlaps (debug)
+    );
+}
 
 
 /*
@@ -2127,31 +1948,41 @@ fSphere8Physical = new G4PVPlacement(0,
   fWorldLogical->SetVisAttributes(worldVisAtt);  
   // logicWorld->SetVisAttributes(G4VisAttributes::GetInvisible());  
 
-  G4VisAttributes* objectVisAtt = new G4VisAttributes(G4Colour(0.0,0.0,1.0,0.5));
-//  objectVisAtt->SetForceWireframe(true);
-  objectVisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+ G4VisAttributes* objectVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0, 0.2));
+  objectVisAtt->SetForceSolid(true);  
   fObjectLogical->SetVisAttributes(objectVisAtt);
- 
-  G4VisAttributes* objectVisAtt2 = new G4VisAttributes(G4Colour(1.0,0.0,0.0,0.5));
-//  objectVisAtt2->SetForceWireframe(true);
-  objectVisAtt2->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+
+  G4VisAttributes* objectVisAtt2 = new G4VisAttributes(G4Colour(0.0,1.0,1.0, 0.5));
+  objectVisAtt2->SetForceSolid(true);     
   fObject2Logical->SetVisAttributes(objectVisAtt2);
 
+  G4VisAttributes* objectVisAtt3 = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
+  objectVisAtt3->SetForceSolid(true);   
+  fObject3Logical->SetVisAttributes(objectVisAtt3);
+  auto alveolusVis = new G4VisAttributes(G4Colour(1.0, 0.2, 0.2));
+  alveolusVis->SetForceSolid(true);
+  AlveolusLV->SetVisAttributes(alveolusVis);
 
+/*
   G4VisAttributes* sphere2VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
 //  objectVisAtt2->SetForceWireframe(true);
   sphere2VisAtt->SetForceSolid(true);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere2Logical->SetVisAttributes(sphere2VisAtt);
+*/
+/*
+  G4VisAttributes* object3VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  object3VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fObject3Logical->SetVisAttributes(object3VisAtt); 
 
  G4VisAttributes* sphere8VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
 //  objectVisAtt2->SetForceWireframe(true);
   sphere8VisAtt->SetForceSolid(true);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere8Logical->SetVisAttributes(sphere8VisAtt);
-  
+*/  
   G4VisAttributes* ionCVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));
   ionCVisAtt->SetVisibility(false);
   ionCVisAtt->SetForceWireframe(true);
@@ -2170,7 +2001,37 @@ fSphere8Physical = new G4PVPlacement(0,
   pixiradVisAtt->SetForceSolid(true);
   // pixelVisAtt->SetForceAuxEdgeVisible(true);
   fPixiRadLogical->SetVisAttributes(pixiradVisAtt);
+/*
+G4VisAttributes* sphere9VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  sphere9VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fSphere9Logical->SetVisAttributes(sphere9VisAtt);
 
+G4VisAttributes* sphere10VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  sphere10VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fSphere10Logical->SetVisAttributes(sphere10VisAtt);  
+
+  G4VisAttributes* sphere11VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  sphere11VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fSphere11Logical->SetVisAttributes(sphere11VisAtt);  
+
+  G4VisAttributes* sphere12VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  sphere12VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fSphere12Logical->SetVisAttributes(sphere12VisAtt); 
+
+   G4VisAttributes* sphere13VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
+//  objectVisAtt2->SetForceWireframe(true);
+  sphere13VisAtt->SetForceSolid(true);
+  // objectVisAtt->SetForceAuxEdgeVisible(true);     
+  fSphere13Logical->SetVisAttributes(sphere13VisAtt);    
+*/
  //================= SAND PAPER VIS =========================================
  
   G4VisAttributes* sandVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));
@@ -2221,7 +2082,7 @@ fSphere8Physical = new G4PVPlacement(0,
   sphere6VisAtt->SetVisibility(false);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere6Logical->SetVisAttributes(sphere6VisAtt);
-  
+
   G4VisAttributes* sand5VisAtt = new G4VisAttributes(G4Colour(0.0,1.0,1.0));
   sand5VisAtt->SetForceWireframe(true);
   sand5VisAtt->SetVisibility(true);
@@ -2235,8 +2096,8 @@ fSphere8Physical = new G4PVPlacement(0,
   sphere7VisAtt->SetVisibility(false);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere7Logical->SetVisAttributes(sphere7VisAtt);
-
-  /*
+/*
+  
   G4VisAttributes* sand6VisAtt = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   sand6VisAtt->SetForceWireframe(true);
   sand6VisAtt->SetVisibility(true);
@@ -2250,7 +2111,7 @@ fSphere8Physical = new G4PVPlacement(0,
   sphere9VisAtt->SetVisibility(false);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere9Logical->SetVisAttributes(sphere9VisAtt);
-  
+ 
   G4VisAttributes* sand7VisAtt = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   sand7VisAtt->SetForceWireframe(true);
   sand7VisAtt->SetVisibility(true);
@@ -2293,7 +2154,7 @@ fSphere8Physical = new G4PVPlacement(0,
   sphere12VisAtt->SetVisibility(false);
   // objectVisAtt->SetForceAuxEdgeVisible(true);     
   fSphere12Logical->SetVisAttributes(sphere12VisAtt);
-
+/*
   G4VisAttributes* sand10VisAtt = new G4VisAttributes(G4Colour(0.0,1.0,0));
   sand10VisAtt->SetForceWireframe(true);
   sand10VisAtt->SetVisibility(true);

@@ -71,12 +71,21 @@ set(PEPI2_SCRIPTS
   data/Cellulose_delta.txt
   data/Wax_delta.txt
   data/random_sphere_coordinates.txt
+  data/1_um_Coords.txt
   data/125_um_Coord.txt
   data/125_um_Coord2.txt
   data/125_um_Coord3.txt
   data/125_um_Coord4.txt
+  data/125_um_Coord_copy.txt
+  data/125_um_Coord2_copy.txt
+  data/125_um_Coord3_copy.txt
+  data/125_um_Coord4_copy.txt
   data/125_um_Coord5.txt
   data/125_um_Coord6.txt
+  data/125_um_Coord7.txt
+  data/125_um_Coord8.txt
+  data/125_um_Coord9.txt
+  data/125_um_Coord10.txt  
   data/100_um_Coord1.txt
   data/100_um_Coord2.txt
   data/100_um_Coord3.txt
@@ -89,6 +98,16 @@ set(PEPI2_SCRIPTS
   data/58_um_Coord4.txt
   data/58_um_Coord5.txt
   data/58_um_Coord6.txt
+  data/250_um_Coord1.txt
+  data/208_um_Coord1.txt
+  data/166_um_Coord1.txt
+  data/125__500_um_Coord.txt
+  data/10__500_um_Coord.txt
+  data/1__500_um_Coord.txt
+  data/2__500_um_Coord.txt
+  data/3__500_um_Coord.txt
+  data/5__500_um_Coord.txt
+  data/5__2e8_um_Coord.txt
   spectra/28kVFilterAg.in
   spectra/28kVFilterMo-Ag.in
   spectra/28kVFilterRh.in
@@ -107,6 +126,13 @@ set(PEPI2_SCRIPTS
   spectra/28kVNoFilter.in
   spectra/78kVNoFilter.in
   spectra/58kVNoFilter.in
+  data/Heart.stl 
+  data/Lungs.stl 
+  data/Ribcage.stl 
+  data/Thyroid.stl 
+  data/Torax.stl
+  data/Skin_delta.txt 
+  data/Bone_delta.txt
    )
 
 foreach(_script ${PEPI2_SCRIPTS})

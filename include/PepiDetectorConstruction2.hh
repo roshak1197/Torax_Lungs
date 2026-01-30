@@ -35,12 +35,15 @@
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"
 #include "globals.hh"
+#include "G4SubtractionSolid.hh"
 #include <tuple>
 
 class G4Box;
 class G4Tubs;
 class G4Sphere;
+class G4EllipticalTube;
 class G4Trd;
+class G4Orb;
 class G4LogicalVolume;
 class G4VPhysicalVolume;
 
@@ -156,6 +159,7 @@ class PepiDetectorConstruction2 : public G4VUserDetectorConstruction
     G4Material* fObjectMaterial;
     G4Material* fObject2Material;
     G4Material* fObject3Material;
+    G4Material* fObject4Material;
     G4Material* fSubMaterial;
     G4Material* fSphereMaterial;
     G4Material* fMuscleMaterial;
@@ -175,9 +179,9 @@ class PepiDetectorConstruction2 : public G4VUserDetectorConstruction
     G4Box*  fM1Solid;
     G4Box*  fEnvelopeM2Solid;
     G4Box*  fEnvelopeM1Solid;
-    G4Box*  fObjectSolid;
+    G4EllipticalTube* fObjectSolid;
     G4Box*  fObject2Solid;
-    G4Box*  fObject3Solid;
+    //G4Tubs*  fObject3Solid;
     G4Box*  fObject5Solid;
     G4Box*  fObject6Solid;
     G4Sphere* fSphereSolid;
@@ -203,6 +207,8 @@ class PepiDetectorConstruction2 : public G4VUserDetectorConstruction
     G4Sphere* fSphere12Solid;
     G4Sphere* fSphere13Solid;
     G4Sphere* fSphere14Solid;
+    G4SubtractionSolid* subtractedFiller_1;
+    G4SubtractionSolid* subtractedFiller_2;
 
     G4LogicalVolume* fWorldLogical;
     G4LogicalVolume* fIonCLogical;
@@ -289,6 +295,10 @@ class PepiDetectorConstruction2 : public G4VUserDetectorConstruction
     G4double fDith;
     G4double fObjectDetDistance;
     G4double fSrcObjDistance;
+    G4double fObjSizeR1;
+    G4double fObjSizeR2;
+    G4double fObjSizeY1;
+    G4double fDithe;
 
     G4double fObjSizeR;
     G4double fObjSizeY;
@@ -355,8 +365,10 @@ class PepiDetectorConstruction2 : public G4VUserDetectorConstruction
     G4double fM2Aperture;
     G4double fM2Pitch;
     G4double fTras;
+    G4double fTras_obj;
     G4double fTrasX;
     G4double fTrasY;
+    G4double alveolusRadius;
 
     G4double fSubThickness;    
     

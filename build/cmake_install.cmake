@@ -1,4 +1,4 @@
-# Install script for directory: /home/c.tibambre/Paralell_10Lija_txt/PEPI2
+# Install script for directory: /home/c.tibambre/Torax_SBI/PEPI2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,12 +44,12 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/PEPI2"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/c.tibambre/Paralell_10Lija_txt/PEPI2/build/PEPI2")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/c.tibambre/Torax_SBI/PEPI2/build/PEPI2")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/PEPI2" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/PEPI2")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/PEPI2"
-         OLD_RPATH "/usr/local/HEP/geant4/geant4-v11.1.2-install/lib:"
+         OLD_RPATH "/usr/local/HEP/GEANT4/geant4-v11/geant4-v11-install/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/PEPI2")
@@ -65,5 +65,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/c.tibambre/Paralell_10Lija_txt/PEPI2/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/c.tibambre/Torax_SBI/PEPI2/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
