@@ -13,7 +13,7 @@
 # ================== Running settings ==================
 
 # Change the default number of threads (in multi-threaded mode)
-/run/numberOfThreads 1
+/run/numberOfThreads 10
 /run/printProgress 1000000
 
 # ================== Geometry settings ==================
@@ -23,7 +23,7 @@
 
 # ================== Readout settings ==================
 
-/Pepi/cont/setBaseName SBI_LUNGS_2_
+/Pepi/cont/setBaseName TiC_LUNGS_S17_20um_28kV_Al
 
 ################## Kernel initialization ################
 
@@ -36,9 +36,9 @@
 # ================== Setup settings ==================
 
 /control/execute gps.in
-/control/execute spectra/28kVFilterRh.in
+/control/execute spectra/28kVFilterA02mm.in
 
-/Pepi/cont/beamOn 500000000
+/Pepi/cont/beamOn 2086000000
 
 #/score/dumpQuantityToFile Mesh1 dose Sph40kVAg1.out
 #/score/dumpQuantityToFile Mesh2 dose Sph40kVAg2.out

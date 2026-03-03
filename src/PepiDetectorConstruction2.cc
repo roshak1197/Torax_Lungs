@@ -290,8 +290,8 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   
   fTras = 5*cm;//28.7*cm; 
   fTras_obj = 20.8*um;
-  fTrasX = 400*um;
-  fTrasY = -100*um;
+  fTrasX = -80*um;
+  fTrasY = 80*um;
   
   fMessenger = new PepiDetectorMessenger(this);
 }
@@ -818,14 +818,14 @@ void PepiDetectorConstruction2::DefineMaterials()
   fIonCMaterial     = Air;// Vacuum1;
   fDetectorMaterial = CdTe;
   fMaskMaterial     = Gold;
-  fObjectMaterial   = Air;
-  fObject2Material  = Lung;//Adipose;
-  fObject3Material  = Muscle;
+  fObjectMaterial   = Lung;
+  fObject2Material  = Nylon;//Lung;//Adipose;
+  fObject3Material  = Air;//Muscle;
   fObject4Material  = Air;//Bone;
   fObject5Material  = Air;
   fSubMaterial	    = Air;//Trioxide;
-  fSphereMaterial   = Air;//SiC;
-  fMuscleMaterial   = Air;// Cellulose;
+  fSphereMaterial   = SiC;
+  fMuscleMaterial   = Cellulose;
   fObject5Material  = Blood;//
 //  fObject6Material  = Molybdenum1; Silver1;
   fObject6Material  = PlaqueS;// Molybdenum1;
@@ -1870,7 +1870,7 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
 		   			false,
 		   			0,
 					true);
-G4double alveolusRadius = 2.0*mm;
+G4double alveolusRadius = 1.0*mm;
 
 auto AlveolusS = new G4Sphere(
     "Alveolus",
@@ -1884,8 +1884,8 @@ auto AlveolusLV = new G4LogicalVolume(
     fObject2Material,
     "AlveolusLV"
 );
-G4ThreeVector alveolusPos( +20*mm, 0*mm, 0*mm );
-if (LungsS->Inside(alveolusPos) == kInside) {
+G4ThreeVector alveolusPos( 7*mm, 0*mm, 0*mm );
+
 
     new G4PVPlacement(
         0,                    // sin rotación
@@ -1897,7 +1897,7 @@ if (LungsS->Inside(alveolusPos) == kInside) {
         0,
         true                 // check overlaps (debug)
     );
-}
+
 
 
 /*
@@ -1956,7 +1956,7 @@ if (LungsS->Inside(alveolusPos) == kInside) {
   objectVisAtt2->SetForceSolid(true);     
   fObject2Logical->SetVisAttributes(objectVisAtt2);
 
-  G4VisAttributes* objectVisAtt3 = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
+  G4VisAttributes* objectVisAtt3 = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0,0.5));
   objectVisAtt3->SetForceSolid(true);   
   fObject3Logical->SetVisAttributes(objectVisAtt3);
   auto alveolusVis = new G4VisAttributes(G4Colour(1.0, 0.2, 0.2));
