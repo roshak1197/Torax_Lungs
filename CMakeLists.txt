@@ -133,6 +133,8 @@ set(PEPI2_SCRIPTS
   data/Torax.stl
   data/Skin_delta.txt 
   data/Bone_delta.txt
+  spectra/28kVFilter1mmAl.in
+  spectra/28kVFilterA02mm.in
    )
 
 foreach(_script ${PEPI2_SCRIPTS})
