@@ -13,7 +13,7 @@
 # ================== Running settings ==================
 
 # Change the default number of threads (in multi-threaded mode)
-/run/numberOfThreads 20
+/run/numberOfThreads 15
 /run/printProgress 1000000
 
 # ================== Geometry settings ==================
@@ -23,7 +23,7 @@
 
 # ================== Readout settings ==================
 
-/Pepi/cont/setBaseName TiC_TORAX_R02_2_20um_28kV_NF
+/Pepi/cont/setBaseName TiC_TORAX_R03_2_20um_28kV_NF
 
 ################## Kernel initialization ################
 
