@@ -83,6 +83,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../mac/run2.mac"
   "../mac/tsg_offscreen.mac"
   "../mac/vis.mac"
+  "../spectra/28kVFilter1mmAl.in"
+  "../spectra/28kVFilterA02mm.in"
   "../spectra/28kVFilterAg.in"
   "../spectra/28kVFilterMo-Ag.in"
   "../spectra/28kVFilterRh-Ag.in"
@@ -295,6 +297,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "data/Torax.stl"
   "data/Skin_delta.txt"
   "data/Bone_delta.txt"
+  "spectra/28kVFilter1mmAl.in"
+  "spectra/28kVFilterA02mm.in"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
