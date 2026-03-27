@@ -23,7 +23,7 @@
 
 # ================== Readout settings ==================
 
-/Pepi/cont/setBaseName TiC_TORAX_MR03_2_20um_28kV_Al
+/Pepi/cont/setBaseName TiC_TORAX_MR07_2_20um_28kV_Al
 
 ################## Kernel initialization ################
 

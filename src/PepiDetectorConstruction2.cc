@@ -290,8 +290,8 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   
   fTras = 5*cm;//28.7*cm; 
   fTras_obj = 20.8*um;
-  fTrasX = 100*um;
-  fTrasY = 40*um;
+  fTrasX = -300*um;
+  fTrasY = 120*um;
   
   fMessenger = new PepiDetectorMessenger(this);
 }
