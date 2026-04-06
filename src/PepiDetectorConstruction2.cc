@@ -290,8 +290,8 @@ PepiDetectorConstruction2::PepiDetectorConstruction2()
   
   fTras = 5*cm;//28.7*cm; 
   fTras_obj = 20.8*um;
-  fTrasX = -300*um;
-  fTrasY = 120*um;
+  fTrasX = -450*um;
+  fTrasY = 30*um;
   
   fMessenger = new PepiDetectorMessenger(this);
 }
@@ -818,12 +818,12 @@ void PepiDetectorConstruction2::DefineMaterials()
   fIonCMaterial     = Air;// Vacuum1;
   fDetectorMaterial = CdTe;
   fMaskMaterial     = Gold;
-  fObjectMaterial   = Air;//Lung;
-  fObject2Material  = Air;//Adipose;//Air;//Nylon;//Lung;//
-  fObject3Material  = Muscle;//Air;//
-  fObject4Material  = Air;//Bone;//Air;//
-  fObject5Material  = Air;
-  fSubMaterial	    = Air;//Trioxide;
+  fObjectMaterial   = Muscle;//Lung;
+  fObject2Material  = Muscle;//Adipose;//Air;//Nylon;//Lung;//
+  fObject3Material  = Muscle;//
+  fObject4Material  = Muscle;//Bone;//Air;//
+  fObject5Material  = Muscle;
+  fSubMaterial	    = Muscle;//Trioxide;
   fSphereMaterial   = SiC;
   fMuscleMaterial   = Cellulose;
   fObject5Material  = Blood;//
@@ -1801,75 +1801,133 @@ fSphere14Logical = new G4LogicalVolume(fSphere14Solid,
   // ========================================
   //                 Objects
   // ========================================
-  // - Build the Object
+ // ========================================
+//         CONFIGURACIÓN DE GEOMETRÍA
+// ========================================
+bool useFullGeometry = false; // 👈 cambiar a true si quieres STL + substracciones
 
-  G4RotationMatrix* rotMat =  new G4RotationMatrix();
-  rotMat->rotateX(90*deg);
-  rotMat->rotateZ(fRotAngle);
+// - Rotación
+G4RotationMatrix* rotMat = new G4RotationMatrix();
+rotMat->rotateX(90*deg);
+rotMat->rotateZ(fRotAngle);
 
-  G4ThreeVector objectPosition = G4ThreeVector(0.*mm+fTras_obj+fDithe,0,fSourcePosZ+fSrcObjDistance-fObjSizeR+fObjSizeR1+fObjSizeR2/2+1*cm);
+// - Posición principal
+G4ThreeVector objectPosition = G4ThreeVector(
+    0.*mm + fTras_obj + fDithe,
+    0,
+    fSourcePosZ + fSrcObjDistance - fObjSizeR + fObjSizeR1 + fObjSizeR2/2 + 1*cm
+);
 
-  auto RibcageS = CADMesh::TessellatedMesh::FromSTL("../data/Ribcage.stl")->GetSolid();
-  auto LungsS = CADMesh::TessellatedMesh::FromSTL("../data/Lungs.stl")->GetSolid();
-  auto ThyroidS = CADMesh::TessellatedMesh::FromSTL("../data/Thyroid.stl")->GetSolid();
+// ========================================
+//              ELIPSOIDE BASE
+// ========================================
+fObjectSolid = new G4EllipticalTube(
+    "Torax",
+    fObjSizeR + 1*cm,
+    fObjSizeR2,
+    fPixiRadSizeY/2
+);
 
-  fObjectSolid = new G4EllipticalTube("Torax",                         //its name
-                            fObjSizeR+1*cm,                     //xSemiAxis
-                            fObjSizeR2,                     //ySemiAxis
-                            fPixiRadSizeY/2);                //its half lenght Z
+// ========================================
+//        GEOMETRÍA COMPLETA (OPCIONAL)
+// ========================================
+G4VSolid* finalSolid = fObjectSolid;
 
-  auto ToraxL = new G4SubtractionSolid("Inner0", fObjectSolid, LungsS);
-  auto ToraxLR = new G4SubtractionSolid("Inner1", ToraxL, RibcageS);
-  auto ToraxLRT = new G4SubtractionSolid("Inner2", ToraxLR, ThyroidS);
+if (useFullGeometry)
+{
+    auto RibcageS = CADMesh::TessellatedMesh::FromSTL("../data/Ribcage.stl")->GetSolid();
+    auto LungsS   = CADMesh::TessellatedMesh::FromSTL("../data/Lungs.stl")->GetSolid();
+    auto ThyroidS = CADMesh::TessellatedMesh::FromSTL("../data/Thyroid.stl")->GetSolid();
 
-  fObjectLogical = new G4LogicalVolume(ToraxLRT,
-				          fObject3Material,
-					  "logicalT");
-  fScoringVolume=fObjectLogical;
+    auto ToraxL  = new G4SubtractionSolid("Inner0", fObjectSolid, LungsS);
+    auto ToraxLR = new G4SubtractionSolid("Inner1", ToraxL, RibcageS);
+    auto ToraxLRT= new G4SubtractionSolid("Inner2", ToraxLR, ThyroidS);
 
-  G4ThreeVector objectPosition2 = G4ThreeVector(0.*mm+fDithe,0,fSourcePosZ+fSrcObjDistance-fObjSizeR+fObjSizeR1/2+0.1*cm);
+    finalSolid = ToraxLRT;
 
-  fObject2Solid = new G4Box("CubeDoses",                               //its name
-                          fObjSizeY1/2,   //its size
-                          fObjSizeY1/2,
-                          fObjSizeR1/2);
+    // Logical extra (ej: costillas)
+    fObject3Logical = new G4LogicalVolume(
+        RibcageS,
+        fObjectMaterial,
+        "logicalR"
+    );
 
-  fObject2Logical = new G4LogicalVolume(fObject2Solid,       //its solid
-                                       fObjectMaterial,    //its material
-                                       "CubeDosesLV");          //its name   
-//  fScoringVolume=fObject2Logical;
+    fObject3Physical = new G4PVPlacement(
+        rotMat,
+        objectPosition,
+        fObject3Logical,
+        "PhysicalR",
+        fWorldLogical,
+        false,
+        0,
+        true
+    );
+}
 
-  auto RibcageSLogical = new G4LogicalVolume(RibcageS,
-				          fObjectMaterial,
-					  "logicalR");
-  fObject3Logical = RibcageSLogical;
-//  fScoringVolume=fObject3Logical;
+// ========================================
+//           LOGICAL PRINCIPAL
+// ========================================
+fObjectLogical = new G4LogicalVolume(
+    finalSolid,
+    fObject3Material,
+    "logicalT"
+);
 
-  fObjectPhysical = new G4PVPlacement(rotMat,
-		   			objectPosition,
-		   			fObjectLogical,
-		   			"PhysicalT",
-		   			fWorldLogical,
-		   			false,
-		   			0,
-					true);
-  fObject2Physical = new G4PVPlacement(0,              //its rotation
-                                      objectPosition2,       //its translation
-                                      fObject2Logical,      //its logical volume
-                                      "CubeDoses",              //its name
-                                      fWorldLogical,       //its mother volume
-                                      false,               //no boolean operation
-                                      0,                   //copy number
-                                      fCheckOverlaps);     //checking overlaps 
+fScoringVolume = fObjectLogical;
 
-  fObject3Physical = new G4PVPlacement(rotMat,
-		   			objectPosition,
-		   			fObject3Logical,
-		   			"PhysicalR",
-		   			fWorldLogical,
-		   			false,
-		   			0,
-					true);
+// ========================================
+//           POSICIÓN SECUNDARIA
+// ========================================
+G4ThreeVector objectPosition2 = G4ThreeVector(
+    0.*mm + fDithe,
+    0,
+    fSourcePosZ + fSrcObjDistance - fObjSizeR + fObjSizeR1/2 + 0.1*cm
+);
+
+// ========================================
+//              CUBO DOSIS
+// ========================================
+fObject2Solid = new G4Box(
+    "CubeDoses",
+    fObjSizeY1/2,
+    fObjSizeY1/2,
+    fObjSizeR1/2
+);
+
+fObject2Logical = new G4LogicalVolume(
+    fObject2Solid,
+    fObjectMaterial,
+    "CubeDosesLV"
+);
+
+// ========================================
+//         COLOCACIÓN PRINCIPAL
+// ========================================
+fObjectPhysical = new G4PVPlacement(
+    rotMat,
+    objectPosition,
+    fObjectLogical,
+    "PhysicalT",
+    fWorldLogical,
+    false,
+    0,
+    true
+);
+
+fObject2Physical = new G4PVPlacement(
+    0,
+    objectPosition2,
+    fObject2Logical,
+    "CubeDoses",
+    fWorldLogical,
+    false,
+    0,
+    fCheckOverlaps
+);
+
+// ========================================
+//               ALVEOLO
+// ========================================
 G4double alveolusRadius = 1.0*mm;
 
 auto AlveolusS = new G4Sphere(
@@ -1878,160 +1936,97 @@ auto AlveolusS = new G4Sphere(
     alveolusRadius,
     0.*deg, 360.*deg,
     0.*deg, 180.*deg
-); 
+);
+
 auto AlveolusLV = new G4LogicalVolume(
     AlveolusS,
     fObject2Material,
     "AlveolusLV"
 );
-G4ThreeVector alveolusPos( 7*mm, 0*mm, 0*mm );
 
+G4ThreeVector alveolusPos(7*mm, 0*mm, 0*mm);
 
-    new G4PVPlacement(
-        0,                    // sin rotación
-        alveolusPos,          // posición local al pulmón
-        AlveolusLV,
-        "AlveolusPV",
-        fObject3Logical,      // 👈 mother = pulmón
-        false,
-        0,
-        true                 // check overlaps (debug)
-    );
+// 👇 siempre dentro del objeto principal (funciona en ambos modos)
+new G4PVPlacement(
+    0,
+    alveolusPos,
+    AlveolusLV,
+    "AlveolusPV",
+    fObjectLogical,
+    false,
+    0,
+    true
+);
 
+// ========================================
+//             ION CHAMBER
+// ========================================
+fIonCSolid = new G4Box(
+    "IonChamber",
+    fPixiRadSizeX/2,
+    fPixiRadSizeY/2,
+    2*mm
+);
 
+fIonCLogical = new G4LogicalVolume(
+    fIonCSolid,
+    fIonCMaterial,
+    "IonChamberLV"
+);
 
-/*
-  // ========================================
-  //       SAMPLE MASK M1 and substrate
-  // ========================================
-  if (fAcquisitionType=="doublemask"|| fAcquisitionType=="singlemask")
-  {
-  G4double mag_M1 = (fSrcObjDistance+fObjectDetDistance)/(fSrcObjDistance-(fMaskThickness/2+fObjSizeR)); // magnification of the mask M1
-  G4ThreeVector M1Position = objectPosition-G4ThreeVector(0,0,(fMaskThickness+2*fObjSizeR)/2)+G4ThreeVector(0*cm,0,0);
-  
-  std::tie(fEnvelopeM1Logical,fEnvelopeM1Physical) = CreateMask("M1", mag_M1,fM2Pitch, fM2Aperture, M1Position, fMaskThickness, fMaskMaterial, fEnvelopeM1Logical, fEnvelopeM1Physical);
-  
-  std::tie(fM1subLogical,fM1subPhysical) = CreateSubstrate("M1sub", mag_M1, M1Position-G4ThreeVector(0,0,fSubThickness/2+fMaskThickness/2), fSubThickness, fSubMaterial, fM1subLogical,fM1subPhysical);
-  }
-*/
-  // ========================================
-  //               ION CHAMBER
-  // ========================================
+G4ThreeVector IOCposition = positionPixirad - G4ThreeVector(0, 0, 10*mm);
 
-  // - Build the ION CHAMBER as an unrotated Box
-  fIonCSolid = new G4Box("IonChamber",                     //its name
-                         fPixiRadSizeX/2,                            //its size
-                         fPixiRadSizeY/2,
-                         2*mm);          
-   
-  fIonCLogical = new G4LogicalVolume(fIonCSolid,          //its solid
-                                     fIonCMaterial,       //its material
-                                     "IonChamberLV");     //its name
-                       
-  G4ThreeVector IOCposition = positionPixirad - G4ThreeVector(0, 0, 10*mm);
-  fIonCPhysical =  new G4PVPlacement(0,                   //no rotation
-                                     IOCposition,            //at position
-                                     fIonCLogical,        //its logical volume
-                                     "IonChamber",        //its name
-                                     fWorldLogical,       //its mother  volume
-                                     false,               //no boolean operation
-                                     0,                   //copy number
-                                     fCheckOverlaps);     //checking overlaps 
+fIonCPhysical = new G4PVPlacement(
+    0,
+    IOCposition,
+    fIonCLogical,
+    "IonChamber",
+    fWorldLogical,
+    false,
+    0,
+    fCheckOverlaps
+);
 
+// ========================================
+//             VISUALIZACIÓN
+// ========================================
+G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
+fWorldLogical->SetVisAttributes(worldVisAtt);
 
-  
-  // ========================================
-  //              VISUALIZATION
-  // ========================================
+G4VisAttributes* objectVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0, 0.2));
+objectVisAtt->SetForceSolid(true);
+fObjectLogical->SetVisAttributes(objectVisAtt);
 
-  G4VisAttributes* worldVisAtt = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-  fWorldLogical->SetVisAttributes(worldVisAtt);  
-  // logicWorld->SetVisAttributes(G4VisAttributes::GetInvisible());  
+G4VisAttributes* objectVisAtt2 = new G4VisAttributes(G4Colour(0.0,1.0,1.0, 0.5));
+objectVisAtt2->SetForceSolid(true);
+fObject2Logical->SetVisAttributes(objectVisAtt2);
 
- G4VisAttributes* objectVisAtt = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0, 0.2));
-  objectVisAtt->SetForceSolid(true);  
-  fObjectLogical->SetVisAttributes(objectVisAtt);
+if (useFullGeometry)
+{
+    G4VisAttributes* objectVisAtt3 = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0,0.5));
+    objectVisAtt3->SetForceSolid(true);
+    fObject3Logical->SetVisAttributes(objectVisAtt3);
+}
 
-  G4VisAttributes* objectVisAtt2 = new G4VisAttributes(G4Colour(0.0,1.0,1.0, 0.5));
-  objectVisAtt2->SetForceSolid(true);     
-  fObject2Logical->SetVisAttributes(objectVisAtt2);
+auto alveolusVis = new G4VisAttributes(G4Colour(1.0, 0.2, 0.2));
+alveolusVis->SetForceSolid(true);
+AlveolusLV->SetVisAttributes(alveolusVis);
 
-  G4VisAttributes* objectVisAtt3 = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0,0.5));
-  objectVisAtt3->SetForceSolid(true);   
-  fObject3Logical->SetVisAttributes(objectVisAtt3);
-  auto alveolusVis = new G4VisAttributes(G4Colour(1.0, 0.2, 0.2));
-  alveolusVis->SetForceSolid(true);
-  AlveolusLV->SetVisAttributes(alveolusVis);
+G4VisAttributes* ionCVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));
+ionCVisAtt->SetVisibility(false);
+ionCVisAtt->SetForceWireframe(true);
+fIonCLogical->SetVisAttributes(ionCVisAtt);
 
-/*
-  G4VisAttributes* sphere2VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere2VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere2Logical->SetVisAttributes(sphere2VisAtt);
-*/
-/*
-  G4VisAttributes* object3VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  object3VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fObject3Logical->SetVisAttributes(object3VisAtt); 
+G4VisAttributes* pixelVisAtt = new G4VisAttributes(G4Colour(0.0,0,1.0));
+pixelVisAtt->SetForceWireframe(true);
+pixelVisAtt->SetVisibility(false);
+fPixelLogical->SetVisAttributes(pixelVisAtt);
 
- G4VisAttributes* sphere8VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere8VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere8Logical->SetVisAttributes(sphere8VisAtt);
-*/  
-  G4VisAttributes* ionCVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));
-  ionCVisAtt->SetVisibility(false);
-  ionCVisAtt->SetForceWireframe(true);
-  fIonCLogical->SetVisAttributes(ionCVisAtt);  
- 
-  G4VisAttributes* pixelVisAtt = new G4VisAttributes(G4Colour(0.0,0,1.0));
-  pixelVisAtt->SetForceWireframe(true);
-  //pixelVisAtt->SetForceSolid(true);
-  pixelVisAtt->SetVisibility(false);
-  // pixelVisAtt->SetForceAuxEdgeVisible(true);
-  fPixelLogical->SetVisAttributes(pixelVisAtt);
-
-  G4VisAttributes* pixiradVisAtt = new G4VisAttributes(G4Colour(0.0,0,1.0));
-  pixiradVisAtt->SetForceWireframe(true);
-  pixiradVisAtt->SetVisibility(true);
-  pixiradVisAtt->SetForceSolid(true);
-  // pixelVisAtt->SetForceAuxEdgeVisible(true);
-  fPixiRadLogical->SetVisAttributes(pixiradVisAtt);
-/*
-G4VisAttributes* sphere9VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere9VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere9Logical->SetVisAttributes(sphere9VisAtt);
-
-G4VisAttributes* sphere10VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere10VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere10Logical->SetVisAttributes(sphere10VisAtt);  
-
-  G4VisAttributes* sphere11VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere11VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere11Logical->SetVisAttributes(sphere11VisAtt);  
-
-  G4VisAttributes* sphere12VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere12VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere12Logical->SetVisAttributes(sphere12VisAtt); 
-
-   G4VisAttributes* sphere13VisAtt = new G4VisAttributes(G4Colour(0.6,0.8,1.0));
-//  objectVisAtt2->SetForceWireframe(true);
-  sphere13VisAtt->SetForceSolid(true);
-  // objectVisAtt->SetForceAuxEdgeVisible(true);     
-  fSphere13Logical->SetVisAttributes(sphere13VisAtt);    
-*/
+G4VisAttributes* pixiradVisAtt = new G4VisAttributes(G4Colour(0.0,0,1.0));
+pixiradVisAtt->SetForceWireframe(true);
+pixiradVisAtt->SetVisibility(true);
+pixiradVisAtt->SetForceSolid(true);
+fPixiRadLogical->SetVisAttributes(pixiradVisAtt);
  //================= SAND PAPER VIS =========================================
  
   G4VisAttributes* sandVisAtt = new G4VisAttributes(G4Colour(1.0,0.0,0.0));

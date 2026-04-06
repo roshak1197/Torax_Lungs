@@ -1,5 +1,5 @@
 /run/verbose 0
-/run/numberOfThreads 32
+/run/numberOfThreads 15
 /run/printProgress 1000000
 /control/execute detmask_config.in
 /Pepi/det/setBidimensional true
@@ -14,7 +14,7 @@
 /Pepi/det/setThreshold1 4.9 keV
 /Pepi/det/setThreshold2 18.0 keV
 /Pepi/cont/loadConfig geometry_config.in
-/Pepi/cont/setBaseName TiC_TORAX_MR07_2_20um_28kV_Al
+/Pepi/cont/setBaseName TiC_TORAX_MMMMR015_2_20um_28kV_Al
 /run/initialize
 /control/execute gps.in
 /gps/ene/type User
@@ -84,3 +84,5 @@
 /gps/hist/point 2.78E-02 2.64E+05
 /Pepi/cont/beamOn 2140000000
 /run/geometryModified
+/analysis/h1/getVector
+/analysis/h2/getVector
